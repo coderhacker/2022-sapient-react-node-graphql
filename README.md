@@ -61,8 +61,6 @@ mongodb, nodejs
 
 
 # Day 1 Contents 
-
-
 Disadvantages of using console API
 Overview of the Chrome Developer Tools
 Debugging JS using the Chrome Developer Tools
@@ -74,6 +72,17 @@ Synchronous (blocking) and Asynchronous (non-blocking) methods
 
 
 Block-level scoping and the use of let, const
+    - const  
+    - let 
+    - var 
+    - nothing 
+
+    ```
+        const myvar = "hello; 
+        let myvar = "hello; 
+        var myvar = "hello; 
+        myvar = "hello; -> window.myvar = "hello; 
+    ```
 Template strings
 Default Parameters
 Object and Array Destructuring	
@@ -85,3 +94,234 @@ Promises
 async…await
 
 
+
+Kafka & how esb is used 
+
+Cloud 
+    - aws azure 
+Containarization
+    - docker 
+
+
+
+- prefer not using log 
+- instead we can use debugger 
+    - browers (chrome)
+    - code 
+
+
+
+
+```
+
+function doSomething() {
+    console.log("One");
+    console.log("two");
+
+    fetch(
+            "http://yoursite.com/application/uri/resource",
+        (data) => {document.getElementById("mydiv").innerHTML = data})
+
+    console.log("Four");
+}
+```
+
+
+- es6 content 
+
+```
+    function myfunction(val) {this.val = val}
+    // this is anonymous function + this cannot hold the referece of this 
+    let myfunction = (val) => {this.val this does not work (x)}
+```
+
+- a function inside a function is called closure 
+
+```
+    -- named closured 
+    function one() {
+        // variables which are declared here are accessable to two () + 
+        // since its a function its only loaded 
+        function two() {}
+
+        two(); 
+    }
+    let oneRef = one();
+
+
+    -- 
+
+
+    function one(val1) {
+        return function(val2) {
+            return val1 + val2; 
+        }
+    }
+```
+
+
+- callback 
+- promise 
+- error first approach 
+
+
+
+# Day 2 
+
+- Generators 
+```
+    let arr = [32,5,6,8,9,02,1]; 
+
+    for(let i=0;i< arr.length; i++) {
+        console.log(i)
+    }
+
+    --- 
+    arr.forEach((val) => console.log(val)); 
+    -- fibonacci series 
+    let val = yeild currVal; 
+    [currVal, nextVal] = [nextVal, nextVal + currVal]; 
+```
+
+
+
+
+- Topics 
+
+- MongoDB basics
+- RDBMS vs NoSql DBs
+- Types of NoSQL DBs
+- Pros and Cons of RDBMS and NoSQL DBs
+- Document data model
+- When to use a document database
+- Introduction to MongoDB
+- Features of MongoDB
+- Installation and getting started
+- Using Compass and Robo 3T
+- Databases, collections, and documents
+- Schema design in MongoDB
+- Modelling relationships among collections
+- Basic queries
+- Introduction to the Mongo Shell
+- MongoDB’s query language
+- CRUD operations – Inserts, queries, updates, deletes
+- Query Criteria and Selectors
+- Query options
+- Introduction to document updates
+- Modify by replacement
+- Modify by operator
+
+
+
+
+
+export PATH=$PATH:$HOME/.local/bin:$PATH:YourMongoPath
+
+- SQL -> DBMS, RDBMS, Normalization, Keys ....  - 800 Different databases - A C I D 
+- NoSQL -> DB, un-Normalization, 
+
+```
+| Empid (pk) | empName | salary | designation| 
+| 101 |    Himanshu | 11000 | SE | 
+```
+
+```
+{
+    _id:12 byte information 
+    
+}
+```
+
+- by default 
+    - /data/db - linux, mac, 
+    - c:\data\db - win 
+- create a folder in desktop -> sapient-db 
+- 27017 
+
+> mongod --dbpath . 
+
+> mongod --dbpath . --port 27017
+
+> show dbs 
+
+> use sap_db;  (if the db is not created the it will create)
+
+> let emp={empName:'hitesh', empsal:1234}
+> db.emps.insert(emp); 
+
+
+ 
+> db.emps.insert({empName:'hitesh', empsal:1234}); 
+
+> db.emps.insert({empName:'Rohit', empsal:2233}); 
+
+> db.emps.insert({empName:'Madhulata', empsal:2233, email:"madhulatha@gmail.com"}); 
+
+> show collections; -- to show all the collections in the DB 
+
+
+> db.emps.find({});  - select * from emps; 
+
+>  db.emps.find({selector , projection - 1 or 0 });
+
+> db.emps.find({empName:'hitesh'})
+
+
+> db.emps.find({empsal:{$gt:2000}})
+
+>  mongoimport --host localhost --db sap_db --collection emps --file ./emps.json 
+
+>  mongoexport --db sap_db --host localhost --collection emps --out=exp-emps.json
+
+> db.emps.find({email:{$exists:false}})
+
+-- find people who salary is more than 2000 and should not have email 
+
+> db.emps.find(
+        {
+            empsal:{$gt:2000}, 
+            email:{$exists:false}
+        }, 
+        {
+            _id:0, empName:1, empsal:1 
+        }
+    ); 
+
+```
+
+{
+    empid:101, 
+    empname:"naveen", 
+    email:"naveen@probits.in", 
+    address: {
+        hno:123, 
+        street:"Stevens Creek Blvd", 
+        ... 
+    }, 
+    family: {
+
+    }, 
+    project:{
+        timesheet: []
+    }
+}
+```
+
+- to iterate records and copy to other collection 
+- new collection new_emps should have only name and salary 
+```
+
+var cursor1=db.emps.find({}, {_id:0, empName:1, empsal:1});
+while(cursor1.hasNext()) {
+    let record = cursor1.next();
+    db.new_emps.insert({empname:record.empName.toUpperCase(), salary:record.empsal}); 
+}
+```
+
+
+- db.createCollection("collName", options)
+
+
+- db.createCollection("capCol", {capped:true, autoIndexId:true, size:1000, max:5})
+
+- db.emps.update({empName:"hitesh"}, {$set:{empName:"Hitesh Patil", email:"hitesh@ps.com"}})
