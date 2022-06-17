@@ -325,3 +325,176 @@ while(cursor1.hasNext()) {
 - db.createCollection("capCol", {capped:true, autoIndexId:true, size:1000, max:5})
 
 - db.emps.update({empName:"hitesh"}, {$set:{empName:"Hitesh Patil", email:"hitesh@ps.com"}})
+
+
+
+# day 3 
+
+- to drop collection 
+> db.capCol.drop();
+
+- insert, find 
+- db.emps.find({}, {}); 
+
+- select * from emps where address = 'Delhi' or address = 'Bengaluru' ;
+- select * from emps where address  in ('Delhi', 'bengaluru')
+- select * from emps where address  in ('Delhi', 'bengaluru') or empsal > 2000; 
+- select * from emps where address  in ('Delhi', 'bengaluru') and empsal > 2000; 
+
+
+> db.emps.find({address:{$in:['Delhi', 'Bengaluru']}}); 
+
+- and 
+> db.emps.find({
+        address:{$in:['Delhi', 'Bengaluru']}, 
+        empsal:{$gt:3500}
+        }); 
+
+
+> db.emps.find({
+        $and:[
+                {address:{$in:['Delhi', 'Bengaluru']}}, 
+                {empsal:{$gt:3500}}
+        ]
+        });         
+
+- or 
+> db.emps.find({
+        $or:[
+           
+                {address:{$in:['Delhi', 'Bengaluru']}}, 
+               { empsal:{$gt:3500}}
+           
+        ]}); 
+
+- and  + or 
+> db.emps.find({
+    email : "hitesh@ps.com", 
+        $or:[
+           
+                {address:{$in:['Delhi', 'Bengaluru']}}, 
+               { empsal:{$gt:3500}}
+           
+        ]
+    }); 
+
+> db.emps.update({email : "hitesh@ps.com"}, {$set:{empsal:4000}});
+
+
+
+
+
+Emplyee
+Address
+Insurance
+Project
+Family
+PersonDetails
+ProfessionalDetails
+....
+
+- embedded document 
+```
+    > db.embed.insert({
+        customerId:101, 
+        customerName:'Santosh', 
+        address: {
+            houseNo:1234, 
+            street:'American Dream Way', 
+            city:'Reston', 
+            state:'VA'
+        }, 
+        contact:{
+            email:'santosh@ps.com', 
+            mobile:'+1456 789 7765'
+        }
+    })
+
+
+      > db.embed.insert({
+        customerId:102, 
+        customerName:'Saurabh', 
+        address: {
+            houseNo:3213, 
+            street:'Stevens Creek Blvd', 
+            city:'Ashburn', 
+            state:'VA'
+        }, 
+        contact:{
+            email:'saurabh@ps.com', 
+            mobile:'+1456 799 7765'
+        }
+    })
+```
+
+> db.embed.find({customerId:102})
+
+> db.embed.find({'address.city':'Ashburn'});
+
+- arrays 
+
+```
+    db.foods.insert({name:"Dosa", price:100, restaurant:"Sagar", reviews:[7,8,10,7]});
+    db.foods.insert({name:"Idly", price:70, restaurant:"Sagar", reviews:[5,4,6]});
+    db.foods.insert({name:"Poori", price:123, restaurant:"Sagar", reviews:[9,9,10]});
+    db.foods.insert({name:"Poha", price:80, restaurant:"Sagar", reviews:[4,8]});
+```
+- exact match 
+> db.foods.find({reviews:[5,4,6]});
+
+> db.foods.find({reviews:[4,5,6]});
+
+- find it anywhere 
+> db.foods.find({reviews:8})
+
+- find by index 
+> db.foods.find({'reviews.0':7})
+
+- review with condition 
+> db.foods.find({reviews:{$elemMatch:{$gt:8, $lt:10}}});
+
+> db.foods.find({})
+
+> db.foods.aggregate({$unwind:"$reviews"}, {$match:{name:"Dosa"}}, { $count: "reviews"}); 
+ 
+> db.emps.find().sort({empName:-1, address:1}).skip(2).limit(3);
+
+
+- update (modify the records)
+
+- db.emps.update({}, {country:'India'}); -> update emps set country;'india'; 
+
+- db.emps.update({empName:'Rohit'}, {$set:{country:'India'}});  
+
+
+- db.emps.update({empName:'Rohit'}, {$set:{country:'India'}}, {multi:true}); 
+
+- db.emps.update({}, {$set:{country:'India'}}, {multi:true}); 
+
+- if the record is found it updates else inserts 
+- db.emps.update({empName:"Shiva"}, {$set:{country:'India', email:'shiva@ps.com'}}, {upsert:true}); 
+
+- to use save instead of insert 
+
+> db.emps.save({"_id" : ObjectId("62ac192507a8d61ad3945914"), empName:'Naveen', empsal:2256});
+
+> db.emps.save({"_id" : 100, empName:'Naveen', empsal:2256});
+
+- remove- remove(); 
+
+- remove all the records 
+> db.empd.remove({}); 
+
+- removes with condition 
+> db.emps.remove({empName:"Naveen"});
+
+
+
+
+
+
+
+
+
+
+
