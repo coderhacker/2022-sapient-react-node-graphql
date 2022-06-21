@@ -60,7 +60,7 @@ mongodb, nodejs
 
 
 
-# Day 1 Contents 
+# Day 1 
 Disadvantages of using console API
 Overview of the Chrome Developer Tools
 Debugging JS using the Chrome Developer Tools
@@ -328,7 +328,7 @@ while(cursor1.hasNext()) {
 
 
 
-# day 3 
+# Day 3 
 
 - to drop collection 
 > db.capCol.drop();
@@ -489,12 +489,320 @@ ProfessionalDetails
 > db.emps.remove({empName:"Naveen"});
 
 
+> db.some_mock_db.find({"gender" : "Female"}).explain("executionStats"); 
+
+> db.some_mock_db.createIndex({gender:1}); 
+
+- compound indexes 
+
+> db.some_mock_db.createIndex({id:1, email:1}); 
+
+> db.some_mock_db.createIndex({id:1, email:-1}); 
+
+> db.some_mock_db.find({id:1, email:"ksendall0@amazon.co.uk"}).explain("executionStats"); 
+
+- get those queries which are taking more than 2 millis 
+
+> db.system.profile.find({millis:{$gt:1}}, 
+{
+	"keysExamined" : 1,
+	"docsExamined" : 1,
+    "command":1
+}).pretty();
+
+
+- profiling 
+    - 0 - dont profile 
+    - 1 - profile only if is more than msecs 
+    - 2 - profile all the queries 
 
 
 
 
+-- set profile level 2 (all) 
+> db.setProfilingLevel(2);
 
 
 
 
+```
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "sap_db.some_mock_db",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"gender" : {
+				"$eq" : "Female"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"gender" : {
+					"$eq" : "Female"
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 16345,
+		"executionTimeMillis" : 33,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 35000,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"gender" : {
+					"$eq" : "Female"
+				}
+			},
+			"nReturned" : 16345,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 35002,
+			"advanced" : 16345,
+			"needTime" : 18656,
+			"needYield" : 0,
+			"saveState" : 273,
+			"restoreState" : 273,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 35000
+		}
+	},
+	"serverInfo" : {
+		"host" : "Naveens-MacBook-Pro.local",
+		"port" : 27017,
+		"version" : "4.2.1",
+		"gitVersion" : "edf6d45851c0b9ee15548f0f847df141764a317e"
+	},
+	"ok" : 1
+}
 
+
+size of index 
+
+	"nindexes" : 2,
+	"indexBuilds" : [ ],
+	"totalIndexSize" : 507904,
+	"indexSizes" : {
+		"_id_" : 327680,
+		"gender_1" : 180224
+	},
+	"scaleFactor" : 1,
+	"ok" : 1
+
+- data size 
+	"ns" : "sap_db.some_mock_db",
+	"size" : 4495225,
+	"count" : 35000,
+	"avgObjSize" : 128,
+	"storageSize" : 2015232,
+ 
+```
+
+
+
+- unique key 
+
+>  db.emps1.save({empName:"Rohit", empId:101}); 
+
+>  db.emps1.createIndex({empId:1}, {unique:true}); 
+
+
+- to drop index 
+
+>  db.emps1.dropIndex({empId : 1});
+
+
+```
+    db.getCollectionNames().forEach(function(collection) {  
+        indexes = db[collection].getIndexes();  
+        print("Indexes for " + collection + ":");  
+        printjson(indexes);
+    });
+
+```
+
+- prototype project 
+- team of 4 pepole -20 - 5 teams doing the project 
+
+
+Team 1 - Ankit, Dhananjay, Prit, Rajitha, Sandeep
+    - OTT 
+Team 2 - Himanshu, Manav, Ramkumar, Sourabh
+    - Ecommerce platform 
+Team 3 - Ayush, Harsh, Hemanth, Irshad, Sailesh 
+    - Travel application 
+Team 4 - Aman, Brahmanand, Kumkumbala, Madhulatha, Varki 
+    - e-courses (online courses)
+Team 5 - Ravivarma, Rohit, Santosh, Vikas verma , hitesh
+    - Library Management System 
+
+
+1. Title of project  
+2. to do write up of the modules 
+    - Banking 
+        - Customer 
+        - Account 
+        - Branch 
+        - Bank 
+        - Transaction 
+
+    - Retail 
+        - customer / user 
+        - Products 
+        - Category 
+        - Shipment 
+        - Cart 
+3. representation of Data Model 
+4. MongoDB commanda for CRUD, and any operations which you are looking for 
+5. Naveen - create an organization - 
+
+
+
+
+```
+user collection 
+{
+    userId:1234, 
+    email:'naveen@naveen.com', 
+    .... 
+    orders : [
+        {
+            order:'o1234', 
+            order-items: [
+                
+            ]
+        }, {}
+    ]
+}
+```
+
+
+
+<br >
+
+
+|replica server | port number| 
+|----|---| 
+| rs1 | 27017 |  
+| rs2 | 27018 |  
+| rs3 | 27019 |  
+
+
+```
+> mongod --dbpath ./rs1 --replSet sap-repl --port 27017
+
+> mongod --dbpath ./rs2 --replSet sap-repl --port 27018
+
+> mongod --dbpath ./rs3 --replSet sap-repl --port 27019
+
+> mongo --port 27017
+
+> rs.status(); 
+
+> config={
+        _id:"sap-repl", 
+        members:[
+            { _id:0, host:"localhost:27017"},
+            { _id:1, host:"localhost:27018"}, 
+            { _id:2, host:"localhost:27019"}
+        ]
+    }
+
+> rs.initiate(config); 
+
+> rs.status(); 
+
+-- some body is primary (27017,27018,27019)
+
+> primary: > use repl_db; 
+
+> primary: > db.emps.insert({empid:101, empname:'harry'})
+.. you can put more records 
+
+> mongo --port 27018 
+
+Note : this will not work 
+> show dbs; 
+
+> rs.slaveOk();
+
+-- works 
+> show dbs; 
+
+-- we want to shut down the primary server (27017), you should be in mongo shell of 27017 
+
+> db.shutdownServer(); - will not work 
+
+> use admin; - make sure 
+
+> db.shutdownServer(); -  will work 
+
+-- bring back stopped server 
+> mongod --dbpath ./rs1 --replSet sap-repl --port 27017
+
+now 27017 will be secondary 
+
+> rs.slaveOk();
+
+remember the secondary is only for reading 
+
+for(var i=0; i<100000; i++) {
+    db.dummy.insert({id:i}); 
+    sleep(1);
+}
+
+```
+
+
+
+# Day 4 
+
+protocol 
+    - HTTP 
+        - 1.0 - statefull protocol 
+        - 1.1 - stateless prototcol
+        - 2.0 - pull requests 
+
+- WebServer 
+    - http 
+        - tomcat 
+        - jetty 
+                - nodejs 
+                    - build on top of JS 
+                    - programming language called c / C++ 
+                    - amalgamation between JS + C/c++ 
+                    - you can invoke c code from JS - Native library 
+                    - V8 enginee 
+        - netty 
+        - apache 
+            - Browser / Mobile... 
+- Application 
+    - http 
+    - raw 
+    - ftp / smtp ... 
+        - jboss 
+        - glass fish
+        - web logic 
+        - web sphere 
+        - IIS 
+
+
+- Try out 
+    - create or have a file with over 2gb, try to copy the content from source file to destination file 
+        - readFile 
+        - readStream
+
+-rw-r--r--  1 naveenkumar  admin  316188 20 Jun 14:46 somefile.txt
+-rw-r--r--  1 naveenkumar  admin  316198 20 Jun 14:52 somefile3.txt.gz
+
+
+-rw-r--r--  1 naveenkumar  admin  4742820 20 Jun 14:53 somefile.txt
+-rw-r--r--  1 naveenkumar  admin  4757781 20 Jun 14:53 somefile3.txt.gz
+
+<a href="loginform.html">Login Form</a>
